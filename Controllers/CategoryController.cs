@@ -20,5 +20,60 @@ namespace BookWebShop.Controllers
             List<Category> categoryList = _context.Categories.ToList();
             return View(categoryList);
         }
+
+        public IActionResult Create()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public IActionResult Create(Category category)
+        {
+            if(ModelState.IsValid)
+            {
+                _context.Categories.Add(category);
+                _context.SaveChanges();
+                TempData["success"] = "Category created successfully";
+                return RedirectToAction("Index");
+
+            }
+            return View();
+        }
+
+        public ActionResult Delete(int categoryId)
+        {
+            var toDelete = _context.Categories.Where(x => x.Id == categoryId).FirstOrDefault();
+
+            if (toDelete == null)
+            {
+                return NotFound();
+            }
+
+            _context.Categories.Remove(toDelete);
+            _context.SaveChanges();
+
+            return RedirectToAction("Index");
+        }
+
+
+        public IActionResult Edit(int categoryId)
+        {
+            Category category = _context.Categories.Find(categoryId);
+
+            return View(category);
+        }
+
+        [HttpPost]
+        public IActionResult Edit(Category category)
+        {
+            Category toUpdate = _context.Categories.Where(x => x.Id == category.Id).FirstOrDefault();
+
+            toUpdate.Name = category.Name;
+            toUpdate.DisplayOrder = category.DisplayOrder;
+
+            _context.SaveChanges();
+
+            return RedirectToAction("Index");
+        }
     }
 }
