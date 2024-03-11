@@ -58,7 +58,16 @@ namespace BookWebShop.Controllers
 
         public IActionResult Edit(int categoryId)
         {
+            if(categoryId == 0)
+            {
+                return NotFound();
+            }
             Category category = _context.Categories.Find(categoryId);
+
+            if (category == null)
+            {
+                return NotFound();
+            }
 
             return View(category);
         }
@@ -66,13 +75,14 @@ namespace BookWebShop.Controllers
         [HttpPost]
         public IActionResult Edit(Category category)
         {
+            
             Category toUpdate = _context.Categories.Where(x => x.Id == category.Id).FirstOrDefault();
 
             toUpdate.Name = category.Name;
             toUpdate.DisplayOrder = category.DisplayOrder;
 
             _context.SaveChanges();
-
+            TempData["success"] = "Category edited succesfully";
             return RedirectToAction("Index");
         }
     }
